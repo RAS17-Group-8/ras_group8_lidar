@@ -1,0 +1,8 @@
+<launch>
+
+  <!-- Launch RAS Group 8 Lidar Node -->
+  <node pkg="ras_group8_lidar" type="ras_group8_lidar" name="ras_group8_lidar" output="screen">
+    <rosparam command="load" file="$(find ras_group8_lidar)/config/default.yaml" />
+  </node>
+
+</launch>

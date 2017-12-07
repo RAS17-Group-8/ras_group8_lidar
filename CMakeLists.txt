@@ -7,6 +7,10 @@ find_package(catkin REQUIRED
   geometry_msgs
   nav_msgs
   sensor_msgs
+  visualization_msgs
+  tf
+  image_transport
+  rosbag
 )
 
 catkin_package(
@@ -18,6 +22,8 @@ catkin_package(
     geometry_msgs
     nav_msgs
     sensor_msgs
+    visualization_msgs
+    tf
 
 # DEPENDS
 )
@@ -31,6 +37,7 @@ add_executable(${PROJECT_NAME}
   src/lidar_node.cpp
   src/Lidar.cpp
 )
+add_executable(publish_evidence src/publish_evidence.cpp)
 
 add_dependencies(${PROJECT_NAME}
   ${catkin_EXPORTED_TARGETS}
@@ -39,6 +46,9 @@ add_dependencies(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
 )
+target_link_libraries(publish_evidence
+   ${catkin_LIBRARIES}
+ )
 
 if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(${PROJECT_NAME}_tests

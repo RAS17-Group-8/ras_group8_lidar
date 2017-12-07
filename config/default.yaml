@@ -1,5 +1,2 @@
-lidar_point_cloud_topic: '/scan_cloud'
-
-
-
+#lidar_point_cloud_topic: '/scan_cloud'
 distance_threshold: 0.05

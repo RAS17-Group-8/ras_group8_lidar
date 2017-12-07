@@ -9,10 +9,6 @@ namespace ras_group8_lidar {
 Lidar::Lidar(ros::NodeHandle& node_handle)
     : node_handle_(node_handle)
 {
-//  if (!readParameters()) {
-//    ROS_ERROR("Could not read parameters.");
-//    ros::requestShutdown();
-//  }
   
   lidar_point_cloud_subscriber_= node_handle_.subscribe("/scan_cloud", 1, &Lidar::lidarCallback, this);
 
@@ -35,8 +31,6 @@ Lidar::~Lidar()
 
 bool Lidar::readParameters()
 {
-//  if (!node_handle_.getParam("lidar_point_cloud_topic", lidar_point_cloud_topic_))
-//    return false;
   ROS_INFO("Successfully launched node.1");
   if (!node_handle_.getParam("distance_threshold", distance_threshold_))
     return false;
@@ -45,44 +39,6 @@ bool Lidar::readParameters()
 
 void Lidar::lidarCallback(const sensor_msgs::PointCloud& msg)
 {
-//    msg.points.size();
-//    msg.channels.size();
-//    //msg.channels.name;
-
-//    ROS_INFO("I recive a message points %i, C1 %i, C2 %i", msg.points.size(),msg.channels[0].values.size(),msg.channels[1].values.size());
-//    //ROS_INFO("%s ,%s ",msg.channels[0].name.c_str(),msg.channels[1].name.c_str());
-
-     //s_left_start_=0;
-     //s_left_stop_=0;
-     // s_right_start_=0;
-     // s_right_stop_=0;
-     // s_front_start_=0;
-     // s_front_stop_=0;
-
-
-
-      //ROS_INFO("for %d",msg.points.size());
-   // for (int i=0;i<msg.points.size();i++)
-   // {
-   //     if (msg.channels[1].values[i]<=40.0)
-   //        { s_front_stop_=i;}
-   //     else if (s_right_start_==0&&msg.channels[1].values[i]>=50.0)
-   //        { s_right_start_=i;}
-   //     else if (msg.channels[1].values[i]<=130.0)
-   //        { s_right_stop_=i;}
-   //     else if (s_left_start_==0&&msg.channels[1].values[i]>=230.0)
-   //        { s_left_start_=i;}
-   //     else if (msg.channels[1].values[i]<=310)
-   //        { s_left_stop_=i;}
-   //     else if (s_front_start_==0&&msg.channels[1].values[i]>=320.0)
-   //        { s_front_start_=i;}
-   // }
-   // ROS_ERROR(" %f, %f ;%f, %f; %d %f",msg.channels[1].values[s_left_start_],msg.channels[1].values[s_left_stop_],msg.channels[1].values[s_right_start_],msg.channels[1].values[s_right_stop_],s_front_start_,msg.channels[1].values[s_front_stop_]);
-
-   //  ROS_INFO(" %d, %d", s_left_start_,s_left_stop_);
-   //  ROS_INFO("%f, %f, %f, %f",msg.points[s_left_start_].x,msg.points[s_left_start_].y,msg.points[s_left_stop_].x,msg.points[s_left_stop_].y);
-
-
 	walls.markers.clear();
     s_left_start_=0;
     s_left_stop_=msg.points.size();
@@ -102,7 +58,6 @@ void Lidar::lidarCallback(const sensor_msgs::PointCloud& msg)
 
        while (!finished)
        {
-            //ROS_INFO("While");
            //Creat a line between the start and the end y=ax+b --> ax+b-y=0;
            double a=(msg.points[i_stop].y-msg.points[i_start].y)/(msg.points[i_stop].x-msg.points[i_start].x);
            double b=msg.points[i_start].y-a*msg.points[i_start].x;
@@ -120,22 +75,9 @@ void Lidar::lidarCallback(const sensor_msgs::PointCloud& msg)
                    max_distance=distance;
                }
            }
-           //ROS_INFO("MaxDistance %f index %d",max_distance, i_max_distance);
-          // ros::Duration(10).sleep();
 
            if(i_max_distance==0)
            {
-
-              // if(i_start==true_start)
-              // {
-              //   i_start=i_stop;
-              //   i_stop=i_start-1;
-              //   s_left_stop_=i_stop;
-              //   s_left_start_=i_start;
-              //   i_start_list.push_back(s_left_start_);
-              //   continue;
-              // }
-
                i_start=i_stop;
                i_start_list.push_back(i_start);
                //ROS_INFO("I_MaxDistance %d s_left_stop %d",i_max_distance,s_left_stop_);
@@ -185,11 +127,6 @@ void Lidar::lidarCallback(const sensor_msgs::PointCloud& msg)
             	&& -2.5<msg.points[et2].x<2.5 && -2.5<msg.points[et2].y<2.5)
             {
               visualization_msgs::Marker new_line=Lidar::makeline(msg.points[st].x,msg.points[st].y,msg.points[et2].x,msg.points[et2].y,wallid++);
-              
-              	walls.markers.push_back(new_line);
-             
-              
-              //ROS_INFO("new line");
             }
             st=et;
             et=et+1;
@@ -200,9 +137,8 @@ void Lidar::lidarCallback(const sensor_msgs::PointCloud& msg)
         if(st==pt&& -2.5<msg.points[pt].x<2.5 && -2.5<msg.points[pt].y<2.5
             	&& -2.5<msg.points[next].x<2.5 && -2.5<msg.points[next].y<2.5)
         {
-          visualization_msgs::Marker new_line=Lidar::makeline(msg.points[pt].x,msg.points[pt].y,msg.points[next].x,msg.points[next].y,wallid++);
-         
-              	walls.markers.push_back(new_line);
+          visualization_msgs::Marker new_line=Lidar::makeline(msg.points[pt].x,msg.points[pt].y,msg.points[next].x,msg.points[next].y,wallid++);        
+          walls.markers.push_back(new_line);
           //ROS_INFO("new line, whole line");
 
         }
@@ -210,8 +146,6 @@ void Lidar::lidarCallback(const sensor_msgs::PointCloud& msg)
        ROS_INFO("list size of array %d",sizeof(walls.markers));
 
        lines_publisher_.publish(walls);
-
-
 
        //ros::Duration(5).sleep();
        lines_.poses.resize(i_start_list.size());
@@ -235,25 +169,12 @@ void Lidar::lidarCallback(const sensor_msgs::PointCloud& msg)
    {
        ROS_ERROR(" segements are not possible");
    }
-   //ros::Duration(5).sleep();
-
-
-
-   //right segment
-
-
-
-   //front segment
-
-
-
 }
 
 
 visualization_msgs::Marker Lidar::makeline(float x1, float y1, float x2, float y2,int id)
 {
   //ROS_INFO("make line %f, %f, %f, %f",x1,y1,x2,y2);
-
     geometry_msgs::PointStamped p1;
     p1.header.frame_id=laser_frame;
     p1.header.stamp =ros::Time::now();
@@ -304,7 +225,6 @@ visualization_msgs::Marker Lidar::makeline(float x1, float y1, float x2, float y
     visualization_msgs::Marker marker;
     marker.header.frame_id = target_frame;
     marker.header.stamp = ros::Time::now();
-    // marker.ns = "my_namespace";
     marker.id = id;
     marker.type = 1;
     marker.action = 0;
